@@ -17,7 +17,7 @@
   register: result
   with_items: 
     - "{{ users }}"
-  when: inventory_hostname in groups['cloud-domain'] and users
+  when: inventory_hostname in groups['{{ cloud }}-domain'] and users
 
 ############################ MANAGE WORKGROUND USERS ############################
 - name: Check local users list
@@ -33,4 +33,4 @@
   with_items: 
     - "{{ users }}"
   register: users_result
-  when: inventory_hostname in groups['cloud-local'] and users
+  when: inventory_hostname in groups['{{ cloud }}-local'] and users
