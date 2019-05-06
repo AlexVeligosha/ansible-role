@@ -1,0 +1,37 @@
+############################ MANAGE DOMAIN USERS ############################
+  tasks:
+    - name: Check domain users list
+      win_domain_user:
+        name: "{{ item.name }}"
+        firstname: "{{ item.first_name }}"
+        surname: "{{ item.last_name }}"
+        upn: "{{ item.name + '@' + active_directory_domain }}"
+        enabled: yes
+        update_password: on_create
+        password: "{{ lookup('password', 'credentials/' + item.name + '.pass chars=ascii_letters,digits') }}"
+        password_never_expires: yes
+        user_cannot_change_password: no
+        state: present
+        path: "{{ active_directory_user_base_ou }}"
+        groups_action: add
+        groups: "{{ active_directory_groups }}"
+      register: result
+      with_items: 
+        - "{{ users }}"
+      when: inventory_hostname in groups['cloud-domain'] and users
+
+############################ MANAGE WORKGROUND USERS ############################
+    - name: Check local users list
+      win_user:
+        name: "{{ item.name }}"
+        state: present
+        update_password: on_create
+        password: "{{ lookup('password', 'credentials/' + item.name + '.pass chars=ascii_letters,digits') }}"
+        password_never_expires: yes
+        user_cannot_change_password: no
+        groups:
+            - Administrators
+      with_items: 
+        - "{{ users }}"
+      register: users_result
+      when: inventory_hostname in groups['cloud-local'] and users
