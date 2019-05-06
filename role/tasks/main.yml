@@ -28,8 +28,7 @@
     password: "{{ lookup('password', 'credentials/' + item.name + '.pass chars=ascii_letters,digits') }}"
     password_never_expires: yes
     user_cannot_change_password: no
-    groups:
-        - Administrators
+    groups: "{{ local_groups }"
   with_items: 
     - "{{ users }}"
   register: users_result
